@@ -1,0 +1,63 @@
+# ===========================================
+# Docker Compose for Development
+# ===========================================
+
+version: '3.8'
+
+services:
+  # React Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api
+        VITE_APP_NAME: "React App"
+    container_name: react-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Example Backend (uncomment if needed)
+  # backend:
+  #   image: your-backend-image
+  #   container_name: app-backend
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - DATABASE_URL=postgresql://user:password@db:5432/app
+  #   networks:
+  #     - app-network
+  #   depends_on:
+  #     - db
+
+  # Example Database (uncomment if needed)
+  # db:
+  #   image: postgres:15-alpine
+  #   container_name: app-database
+  #   environment:
+  #     POSTGRES_USER: user
+  #     POSTGRES_PASSWORD: password
+  #     POSTGRES_DB: app
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+# volumes:
+#   postgres_data:
+
